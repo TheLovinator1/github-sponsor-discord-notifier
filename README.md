@@ -1,2 +1,3 @@
-# GitHubSponsorToDiscordWebhook
-Send a webhook to Discord when someone sponsors you
+# github-sponsor-discord-notifier
+
+Send a webhook to Discord when someone sponsors you.
