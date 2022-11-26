@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "github-sponsor-discord-notifier"
+version = "0.1.0"
+description = "Send a webhook to Discord when someone sponsors you."
+authors = ["Joakim Hellsén <tlovinator@gmail.com>"]
+readme = "README.md"
+license = "GPL-3.0-or-later"
+homepage = "https://github.com/TheLovinator1/github-sponsor-discord-notifier"
+repository = "https://github.com/TheLovinator1/github-sponsor-discord-notifier"
+keywords = [
+    "bot",
+    "discord",
+    "github-sponsor-discord-notifier",
+    "github",
+    "sponsors",
+    "github-sponsors",
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.87.0"
+uvicorn = { extras = ["standard"], version = "^0.20.0" }
+discord-webhook = "^1.0.0"
+python-dotenv = "^0.21.0"
+
+[tool.poetry.group.dev.dependencies]
+httpx = "^0.23.1"
+pytest = "^7.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
