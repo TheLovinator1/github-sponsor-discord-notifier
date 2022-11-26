@@ -1,0 +1,11 @@
+services:
+  github-sponsors-discord-notifier:
+    image: ghcr.io/thelovinator/github-sponsors-discord-notifier
+    env_file:
+      - .env
+    container_name: github-sponsors-discord-notifier
+    environment:
+      - WEBHOOK_URL=${WEBHOOK_URL}
+    expose:
+      - 5000
+    restart: unless-stopped
