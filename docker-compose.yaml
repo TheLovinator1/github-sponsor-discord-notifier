@@ -1,9 +1,9 @@
 services:
-  github-sponsors-discord-notifier:
-    image: ghcr.io/thelovinator/github-sponsors-discord-notifier
+  github-sponsor-discord-notifier:
+    image: ghcr.io/thelovinator1/github-sponsor-discord-notifier:latest
     env_file:
       - .env
-    container_name: github-sponsors-discord-notifier
+    container_name: github-sponsor-discord-notifier
     environment:
       - WEBHOOK_URL=${WEBHOOK_URL}
     expose:
