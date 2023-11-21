@@ -3,7 +3,7 @@
 Send a webhook to Discord when someone sponsors you.
 
 <p align="center">
-    <img alt="cute spider programming" src="https://github.com/TheLovinator1/github-sponsor-discord-notifier/blob/master/.github/example.png?raw=true" loading="lazy" width="50%" height="50%" />
+    <img alt="TheLovinator1 got a sponsor from KillYoy: $1 a month" src="https://github.com/TheLovinator1/github-sponsor-discord-notifier/blob/master/.github/example.png?raw=true" loading="lazy" width="50%" height="50%" />
 </p>
 
 ## Installation
