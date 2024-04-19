@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from requests import Response
 
 client = TestClient(app)
-json_boi = {
+json_boi: dict[str, str | dict[str, str | dict[str, str | int | bool]] | dict[str, str | int | bool]] = {
     "action": "created",
     "sponsorship": {
         "node_id": 'S_kwDAX"OAD9fc84ASDAasf',
@@ -126,8 +126,7 @@ def test_send_webhook() -> None:
     assert hook.ok
 
 
-@pytest.mark.asyncio()
-async def test_check_header() -> None:
+def test_check_header() -> None:
     """Test if check_header works."""
 
     class DummyRequest:
@@ -138,13 +137,13 @@ async def test_check_header() -> None:
     # Test case 1: Correct header ("sponsorship")
     request_correct = DummyRequest(headers={"x-github-event": "sponsorship"})
     request_correct = cast(Request, request_correct)
-    await raise_if_wrong_header(request_correct)  # This should not raise any exceptions
+    raise_if_wrong_header(request_correct)  # This should not raise any exceptions
 
     # Test case 2: Missing header
     request_missing = DummyRequest(headers={})
     request_missing = cast(Request, request_missing)
     with pytest.raises(HTTPException) as exc_info:
-        await raise_if_wrong_header(request_missing)
+        raise_if_wrong_header(request_missing)
     assert exc_info.value.status_code == 500  # noqa: PLR2004
     assert exc_info.value.detail == "No header found."
 
@@ -152,6 +151,6 @@ async def test_check_header() -> None:
     request_incorrect = DummyRequest(headers={"x-github-event": "push"})
     request_incorrect = cast(Request, request_incorrect)
     with pytest.raises(HTTPException) as exc_info:
-        await raise_if_wrong_header(request_incorrect)
+        raise_if_wrong_header(request_incorrect)
     assert exc_info.value.status_code == 500  # noqa: PLR2004
     assert exc_info.value.detail == "Only sponsorships are allowed."

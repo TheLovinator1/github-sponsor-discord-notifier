@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from discord_webhook import DiscordEmbed, DiscordWebhook
 from dotenv import find_dotenv, load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 
 if TYPE_CHECKING:
-    import requests
+    from requests import Response
 
 app = FastAPI()
 
@@ -40,7 +40,7 @@ async def webhook(request: Request) -> dict[str, str]:
     response = await request.json()
 
     # Check if header is correct.
-    await raise_if_wrong_header(request)
+    raise_if_wrong_header(request)
 
     # Send webhook to Discord.
     send_webhook(response)
@@ -49,7 +49,7 @@ async def webhook(request: Request) -> dict[str, str]:
     return {"status": "SUCCESS"}
 
 
-async def raise_if_wrong_header(request: Request) -> None:
+def raise_if_wrong_header(request: Request) -> None:
     """Check if the header is correct.
 
     Every webhook from GitHub has a header with the name of the event that triggered the
@@ -69,7 +69,7 @@ async def raise_if_wrong_header(request: Request) -> None:
         raise HTTPException(status_code=500, detail="Only sponsorships are allowed.")
 
 
-def send_webhook(response: dict, webhook_url: str = WEBHOOK_URL) -> requests.Response:
+def send_webhook(response: dict[str, Any], webhook_url: str = WEBHOOK_URL) -> Response:
     """Create the webhook and send to Discord.
 
     Args:
