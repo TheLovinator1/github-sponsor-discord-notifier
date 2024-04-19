@@ -40,3 +40,4 @@ jobs:
         with:
           context: .
           tags: ghcr.io/thelovinator1/github-sponsor-discord-notifier:latest
+          push: ${{ github.event_name != 'pull_request' }}
