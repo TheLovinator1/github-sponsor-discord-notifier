@@ -115,7 +115,11 @@ json_boi: dict[str, str | dict[str, str | dict[str, str | int | bool]] | dict[st
 
 
 def test_send_webhook() -> None:
-    """Test if webhook is sent without errors."""
+    """Test if webhook is sent without errors.
+
+    Raises:
+        ValueError: If no webhook URL is found.
+    """
     load_dotenv(verbose=True)
     webhook_url: str | None = os.environ.get("WEBHOOK_URL", default=None)
     if not webhook_url:

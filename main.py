@@ -5,7 +5,7 @@ import sys
 from typing import TYPE_CHECKING, Any
 
 from discord_webhook import DiscordEmbed, DiscordWebhook
-from dotenv import find_dotenv, load_dotenv
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request
 
 if TYPE_CHECKING:
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 app = FastAPI()
 
 # Take environment variables from .env.
-load_dotenv(find_dotenv(), verbose=True)
+load_dotenv(verbose=True)
 
 # Get the webhook URL.
 WEBHOOK_URL: str | None = os.environ.get("WEBHOOK_URL", default=None)
