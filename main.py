@@ -75,6 +75,9 @@ def send_webhook(response: dict[str, Any], webhook_url: str = WEBHOOK_URL) -> Re
     Args:
         response: The JSON response from GitHub.
         webhook_url: The URL to the webhook.
+
+    Returns:
+        The server response from Discord.
     """
     # Your GitHub username.
     owner_username: str = response["sponsorship"]["sponsorable"]["login"]
