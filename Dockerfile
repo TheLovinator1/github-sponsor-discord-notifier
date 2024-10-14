@@ -26,7 +26,7 @@ USER botuser
 WORKDIR /home/botuser/github-sponsors-discord-notifier
 
 # Copy the required files with appropriate permissions
-COPY --chown=botuser:botuser pyproject.toml poetry.lock README.md LICENSE main.py ./
+COPY --chown=botuser:botuser pyproject.toml README.md LICENSE main.py ./
 
 # Install only the necessary dependencies from Poetry
 RUN poetry install --no-dev --no-interaction --no-ansi && \

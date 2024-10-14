@@ -6,11 +6,7 @@ Send a webhook to Discord when someone sponsors you.
     <img alt="TheLovinator1 got a sponsor from KillYoy: $1 a month" src="https://github.com/TheLovinator1/github-sponsor-discord-notifier/blob/master/.github/example.png?raw=true" loading="lazy" width="50%" height="50%" />
 </p>
 
-## Installation
-
-This is supposed to be run as a Docker container.
-
-### Docker
+## Docker
 
 - Rename `.env.example` to `.env` and fill in the values.
   - Or set your environment variables manually.
@@ -21,7 +17,7 @@ This is supposed to be run as a Docker container.
   - Content type: `application/json`
   - No secret required.
 
-### Nginx
+## Nginx Configuration
 
 ```nginx
 ## Version 2023/11/21
