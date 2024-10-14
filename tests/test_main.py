@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import os
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any
+from unittest.mock import MagicMock, patch
 
 import pytest
-from dotenv import load_dotenv
-from fastapi import HTTPException, Request
-from starlette.testclient import TestClient
+from fastapi import HTTPException
+from fastapi.testclient import TestClient
+from httpx._models import Response
 
 from main import app, raise_if_wrong_header, send_webhook
 
@@ -14,147 +15,165 @@ if TYPE_CHECKING:
     from requests import Response
 
 client = TestClient(app)
-json_boi: dict[str, str | dict[str, str | dict[str, str | int | bool]] | dict[str, str | int | bool]] = {
-    "action": "created",
-    "sponsorship": {
-        "node_id": 'S_kwDAX"OAD9fc84ASDAasf',
-        "created_at": "2022-11-23T12:57:58+00:00",
-        "sponsorable": {
-            "login": "TheLovinator1",
-            "id": 4153203,
-            "node_id": "MDQ61asXasjQxNTMyMDM=",
-            "avatar_url": "https://avatars.githubusercontent.com/u/4153203?v=4",
-            "gravatar_id": "",
-            "url": "https://api.github.com/users/TheLovinator1",
-            "html_url": "https://github.com/TheLovinator1",
-            "followers_url": "https://api.github.com/users/TheLovinator1/followers",
-            "following_url": "https://api.github.com/users/TheLovinator1/following{" "/other_user}",
-            "gists_url": "https://api.github.com/users/TheLovinator1/gists{/gist_id}",
-            "starred_url": "https://api.github.com/users/TheLovinator1/starred{" "/owner}{/repo}",
-            "subscriptions_url": "https://api.github.com/users/TheLovinator1/subscriptions",
-            "organizations_url": "https://api.github.com/users/TheLovinator1/orgs",
-            "repos_url": "https://api.github.com/users/TheLovinator1/repos",
-            "events_url": "https://api.github.com/users/TheLovinator1/events{/privacy}",
-            "received_events_url": "https://api.github.com/users/TheLovinator1/received_events",
-            "type": "User",
-            "site_admin": False,
-        },
-        "maintainer": {
-            "login": "TheLovinator1",
-            "id": 4153203,
-            "node_id": "MDQ61asXasjQxNTMyMDM=",
-            "avatar_url": "https://avatars.githubusercontent.com/u/4153203?v=4",
-            "gravatar_id": "",
-            "url": "https://api.github.com/users/TheLovinator1",
-            "html_url": "https://github.com/TheLovinator1",
-            "followers_url": "https://api.github.com/users/TheLovinator1/followers",
-            "following_url": "https://api.github.com/users/TheLovinator1/following{" "/other_user}",
-            "gists_url": "https://api.github.com/users/TheLovinator1/gists{/gist_id}",
-            "starred_url": "https://api.github.com/users/TheLovinator1/starred{" "/owner}{/repo}",
-            "subscriptions_url": "https://api.github.com/users/TheLovinator1/subscriptions",
-            "organizations_url": "https://api.github.com/users/TheLovinator1/orgs",
-            "repos_url": "https://api.github.com/users/TheLovinator1/repos",
-            "events_url": "https://api.github.com/users/TheLovinator1/events{/privacy}",
-            "received_events_url": "https://api.github.com/users/TheLovinator1/received_events",
-            "type": "User",
-            "site_admin": False,
-        },
-        "sponsor": {
-            "login": "testing",
-            "id": 1,
-            "node_id": "U_kgDOBwX9RA",
-            "avatar_url": "https://avatars.githubusercontent.com/u/1?v=4",
-            "gravatar_id": "",
-            "url": "https://api.github.com/users/testing",
-            "html_url": "https://github.com/testing",
-            "followers_url": "https://api.github.com/users/testing/followers",
-            "following_url": "https://api.github.com/users/testing/following{/other_user}",
-            "gists_url": "https://api.github.com/users/testing/gists{/gist_id}",
-            "starred_url": "https://api.github.com/users/testing/starred{/owner}{/repo}",
-            "subscriptions_url": "https://api.github.com/users/testing/subscriptions",
-            "organizations_url": "https://api.github.com/users/testing/orgs",
-            "repos_url": "https://api.github.com/users/testing/repos",
-            "events_url": "https://api.github.com/users/testing/events{/privacy}",
-            "received_events_url": "https://api.github.com/users/testing/received_events",
-            "type": "User",
-            "site_admin": False,
-        },
-        "privacy_level": "public",
-        "tier": {
-            "node_id": "ST_kwDOAD9fc84AAiB5",
-            "created_at": "2022-03-02T23:11:37Z",
-            "description": "- Buy me coffee.\r\n\r\nMore coffee = more code.\r\n",
-            "monthly_price_in_cents": 100,
-            "monthly_price_in_dollars": 1,
-            "name": "$1 one time",
-            "is_one_time": True,
-            "is_custom_amount": False,
-        },
-    },
-    "sender": {
-        "login": "testing",
-        "id": 1,
-        "node_id": "U_kasfafwX9RA",
-        "avatar_url": "https://avatars.githubusercontent.com/u/1?v=4",
-        "gravatar_id": "",
-        "url": "https://api.github.com/users/testing",
-        "html_url": "https://github.com/testing",
-        "followers_url": "https://api.github.com/users/testing/followers",
-        "following_url": "https://api.github.com/users/testing/following{/other_user}",
-        "gists_url": "https://api.github.com/users/testing/gists{/gist_id}",
-        "starred_url": "https://api.github.com/users/testing/starred{/owner}{/repo}",
-        "subscriptions_url": "https://api.github.com/users/testing/subscriptions",
-        "organizations_url": "https://api.github.com/users/testing/orgs",
-        "repos_url": "https://api.github.com/users/testing/repos",
-        "events_url": "https://api.github.com/users/testing/events{/privacy}",
-        "received_events_url": "https://api.github.com/users/testing/received_events",
-        "type": "User",
-        "site_admin": False,
-    },
-}
+
+HTTP_STATUS_CODE_ERROR = 500
+HTTP_STATUS_CODE_SUCCESS = 200
 
 
-def test_send_webhook() -> None:
-    """Test if webhook is sent without errors.
+# Test for raise_if_wrong_header function
+def test_raise_if_wrong_header_missing() -> None:
+    """Test that the raise_if_wrong_header function raises HTTPException when header is missing."""
+    request = MagicMock()
+    request.headers = {}
 
-    Raises:
-        ValueError: If no webhook URL is found.
-    """
-    load_dotenv(verbose=True)
-    webhook_url: str | None = os.environ.get("WEBHOOK_URL", default=None)
-    if not webhook_url:
-        msg = "No webhook URL found."
-        raise ValueError(msg)
-
-    hook: Response = send_webhook(json_boi, webhook_url)
-    assert hook.ok
-
-
-def test_check_header() -> None:
-    """Test if check_header works."""
-
-    class DummyRequest:
-        # Create a dummy Request object with the necessary headers
-        def __init__(self: DummyRequest, headers: dict[str, str]) -> None:
-            self.headers = headers
-
-    # Test case 1: Correct header ("sponsorship")
-    request_correct = DummyRequest(headers={"x-github-event": "sponsorship"})
-    request_correct = cast(Request, request_correct)
-    raise_if_wrong_header(request_correct)  # This should not raise any exceptions
-
-    # Test case 2: Missing header
-    request_missing = DummyRequest(headers={})
-    request_missing = cast(Request, request_missing)
     with pytest.raises(HTTPException) as exc_info:
-        raise_if_wrong_header(request_missing)
-    assert exc_info.value.status_code == 500  # noqa: PLR2004
+        raise_if_wrong_header(request)
+
+    assert exc_info.value.status_code == HTTP_STATUS_CODE_ERROR
     assert exc_info.value.detail == "No header found."
 
-    # Test case 3: Incorrect header ("push" instead of "sponsorship")
-    request_incorrect = DummyRequest(headers={"x-github-event": "push"})
-    request_incorrect = cast(Request, request_incorrect)
+
+def test_raise_if_wrong_header_incorrect() -> None:
+    """Test that the raise_if_wrong_header function raises HTTPException when header is incorrect."""
+    request = MagicMock()
+    request.headers = {"x-github-event": "push"}
+
     with pytest.raises(HTTPException) as exc_info:
-        raise_if_wrong_header(request_incorrect)
-    assert exc_info.value.status_code == 500  # noqa: PLR2004
+        raise_if_wrong_header(request)
+
+    assert exc_info.value.status_code == HTTP_STATUS_CODE_ERROR
     assert exc_info.value.detail == "Only sponsorships are allowed."
+
+
+def test_raise_if_wrong_header_correct() -> None:
+    """Test that the raise_if_wrong_header function passes when header is 'sponsorship'."""
+    request = MagicMock()
+    request.headers = {"x-github-event": "sponsorship"}
+
+    # Should not raise any exceptions
+    raise_if_wrong_header(request)
+
+
+# Test for /webhook route
+def test_webhook_route_sponsor_event() -> None:
+    """Test that the /webhook route works as expected."""
+    headers: dict[str, str] = {"x-github-event": "sponsorship"}
+    json_data: dict[str, dict[str, dict[str, str]]] = {
+        "sponsorship": {
+            "sponsorable": {"login": "your-username"},
+            "sponsor": {
+                "login": "sponsor-username",
+                "avatar_url": "https://example.com/avatar.jpg",
+                "html_url": "https://github.com/sponsor-username",
+            },
+            "tier": {"name": "$1 one time"},
+        },
+    }
+
+    # Mock send_webhook to avoid sending real requests to Discord.
+    with patch("main.send_webhook") as mock_send_webhook:
+        mock_send_webhook.return_value = MagicMock()  # Mock Discord Response
+
+        response = client.post("/webhook", headers=headers, json=json_data)
+
+        assert response.status_code == HTTP_STATUS_CODE_SUCCESS
+        assert response.json() == {"status": "SUCCESS"}
+        mock_send_webhook.assert_called_once_with(json_data)
+
+
+def test_webhook_route_incorrect_event() -> None:
+    """Test that the /webhook route rejects non-sponsorship events."""
+    headers: dict[str, str] = {"x-github-event": "push"}
+    json_data: dict[str, Any] = {}
+
+    response = client.post("/webhook", headers=headers, json=json_data)
+
+    assert response.status_code == HTTP_STATUS_CODE_ERROR
+    assert response.json() == {"detail": "Only sponsorships are allowed."}
+
+
+# Test for send_webhook function
+def test_send_webhook() -> None:
+    """Test that the send_webhook function sends correct data to Discord."""
+    json_data: dict[str, dict[str, dict[str, str]]] = {
+        "sponsorship": {
+            "sponsorable": {"login": "your-username"},
+            "sponsor": {
+                "login": "sponsor-username",
+                "avatar_url": "https://example.com/avatar.jpg",
+                "html_url": "https://github.com/sponsor-username",
+            },
+            "tier": {"name": "$1 one time"},
+        },
+    }
+
+    # Mock DiscordWebhook and DiscordEmbed
+    with patch("main.DiscordWebhook") as mock_discord_webhook, patch("main.DiscordEmbed") as mock_discord_embed:
+        mock_hook = mock_discord_webhook.return_value
+        mock_embed = mock_discord_embed.return_value
+
+        response: Response = send_webhook(json_data)
+
+        # Check that the webhook was created with the correct URL and embed
+        mock_discord_webhook.assert_called_once_with(
+            url=os.getenv("WEBHOOK_URL"),
+            rate_limit_retry=True,
+            username="GitHub sponsors",
+        )
+        mock_hook.add_embed.assert_called_once_with(mock_embed)
+        mock_hook.execute.assert_called_once()
+        assert response == mock_hook.execute()
+
+
+def test_send_webhook_failure() -> None:
+    """Test handling of a failed webhook request to Discord."""
+    json_data: dict[str, dict[str, dict[str, str]]] = {
+        "sponsorship": {
+            "sponsorable": {"login": "your-username"},
+            "sponsor": {
+                "login": "sponsor-username",
+                "avatar_url": "https://example.com/avatar.jpg",
+                "html_url": "https://github.com/sponsor-username",
+            },
+            "tier": {"name": "$1 one time"},
+        },
+    }
+
+    with patch("main.DiscordWebhook") as mock_discord_webhook:
+        mock_hook = mock_discord_webhook.return_value
+        mock_hook.execute.return_value.status_code = HTTP_STATUS_CODE_ERROR
+
+        response = send_webhook(json_data)
+        assert response.status_code == HTTP_STATUS_CODE_ERROR
+
+
+def test_send_webhook_missing_keys() -> None:
+    """Test handling when required keys are missing in the GitHub payload."""
+    incomplete_json: dict[str, dict[str, dict[str, str]]] = {"sponsorship": {"sponsor": {"login": "sponsor-username"}}}
+
+    with pytest.raises(KeyError):
+        send_webhook(incomplete_json)
+
+
+def test_send_webhook_various_tiers() -> None:
+    """Test sending webhooks with different sponsor tiers."""
+    json_data: dict[str, dict[str, dict[str, str]]] = {
+        "sponsorship": {
+            "sponsorable": {"login": "your-username"},
+            "sponsor": {
+                "login": "sponsor-username",
+                "avatar_url": "https://example.com/avatar.jpg",
+                "html_url": "https://github.com/sponsor-username",
+            },
+            "tier": {"name": "$10 per month"},
+        },
+    }
+
+    with patch("main.DiscordWebhook") as mock_discord_webhook:
+        mock_hook = mock_discord_webhook.return_value
+        send_webhook(json_data)
+        mock_hook.execute.assert_called_once()
+
+
+if __name__ == "__main__":
+    pytest.main()

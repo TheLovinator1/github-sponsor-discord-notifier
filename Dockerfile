@@ -1,42 +1,39 @@
+# Use a minimal base image for Python
 FROM python:3.13-slim
 
-# We don't want apt-get to interact with us and we want the default answers to be used for all questions.
-ARG DEBIAN_FRONTEND=noninteractive
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VIRTUALENVS_CREATE=false \
+    PATH="$POETRY_HOME/bin:$PATH" \
+    DEBIAN_FRONTEND=noninteractive
 
-# Don't generate byte code (.pyc-files).
-# These are only needed if we run the python-files several times.
-# Docker doesn't keep the data between runs so this adds nothing.
-ENV PYTHONDONTWRITEBYTECODE 1
+# Install essential packages and curl for downloading Poetry, then clean up
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential gcc curl && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
+    apt-get purge -y --auto-remove curl && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Force the stdout and stderr streams to be unbuffered.
-# Will allow log messages to be immediately dumped instead of being buffered.
-# This is useful when the bot crashes before writing messages stuck in the buffer.
-ENV PYTHONUNBUFFERED 1
-
-# Update packages and install needed packages to build our requirements.
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential gcc curl python-is-python3
-
-# Create user so we don't run as root.
+# Create a non-root user to enhance security
 RUN useradd --create-home botuser
 
-# Change to the user we created.
+# Switch to the non-root user
 USER botuser
 
-# Install poetry.
-RUN curl -sSL https://install.python-poetry.org | python -
-
-# Add poetry to our path.
-ENV PATH="/home/botuser/.local/bin/:${PATH}"
-
-# Copy files from our repository to the container.
-ADD --chown=botuser:botuser pyproject.toml poetry.lock README.md LICENSE main.py /home/botuser/github-sponsors-discord-notifier/
-
-# Change directory to where we will run the bot.
+# Set working directory to the new user's home directory
 WORKDIR /home/botuser/github-sponsors-discord-notifier
 
-# Install the requirements.
-RUN poetry install --no-interaction --no-ansi --only main
+# Copy the required files with appropriate permissions
+COPY --chown=botuser:botuser pyproject.toml poetry.lock README.md LICENSE main.py ./
 
+# Install only the necessary dependencies from Poetry
+RUN poetry install --no-dev --no-interaction --no-ansi && \
+    rm -rf "$POETRY_HOME/cache"
+
+# Expose the port the app runs on
 EXPOSE 5000
 
+# Define the command to run the application
 CMD ["poetry", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000"]

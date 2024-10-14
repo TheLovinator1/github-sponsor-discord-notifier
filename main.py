@@ -17,7 +17,7 @@ app = FastAPI()
 load_dotenv(verbose=True)
 
 # Get the webhook URL.
-WEBHOOK_URL: str | None = os.environ.get("WEBHOOK_URL", default=None)
+WEBHOOK_URL: str | None = os.environ.get("WEBHOOK_URL")
 if not WEBHOOK_URL:
     sys.exit("You need to fill out the .env or add WEBHOOK_URL to your environment.")
 
