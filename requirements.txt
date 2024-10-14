@@ -1,0 +1,8 @@
+discord-webhook
+fastapi
+httpx
+pre-commit
+pytest
+pytest-asyncio
+python-dotenv
+uvicorn["standard"]
