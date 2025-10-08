@@ -1,4 +1,4 @@
-FROM python:3.13
+FROM python:3.14
 
 # Create a non-root user for security
 RUN useradd --create-home botuser
